@@ -1,0 +1,233 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Add seed input field -->
+    <div class="mb-3">
+        <h3>Map Seed</h3>
+        <input type="text" id="mapSeed" class="form-control" placeholder="Optional seed">
+    </div>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hex Grid Map Generator</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-light">
+    <div class="container py-4">
+        <h1 class="text-primary mb-4 text-center">Hex Grid Map Generator</h1>
+
+        <!-- Map Dimensions -->
+        <div class="mb-3">
+            <h3>Map Dimensions</h3>
+            <div class="row gy-2">
+                <div class="col-12 col-md-6">
+                    <label for="gridWidth" class="form-label">Grid Width:</label>
+                    <input type="number" id="gridWidth" class="form-control" value="5" min="1" max="20">
+                </div>
+                <div class="col-12 col-md-6">
+                    <label for="gridHeight" class="form-label">Grid Height:</label>
+                    <input type="number" id="gridHeight" class="form-control" value="5" min="1" max="20">
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <label for="scaleFactor" class="form-label">Hex Scale:</label>
+            <input type="number" id="scaleFactor" class="form-control"
+                   value="1.85" min="0.5" max="3" step="0.1">
+        </div>
+<!-- Add this section after the existing terrain controls -->
+<div class="controls-section">
+    <h3>Clustering Factors</h3>
+    <div class="clustering-controls">
+      <!-- Repeat this pattern for each terrain type -->
+      <div class="clustering-control">
+        <label>Water Clustering:</label>
+        <input type="range" id="waterClustering" min="0" max="10" step="0.1" value="1.0">
+        <span id="waterClusteringValue">1.0</span>
+      </div>
+      <div class="clustering-control">
+        <label>Wetland Clustering:</label>
+        <input type="range" id="wetlandClustering" min="0" max="10" step="0.1" value="0.5">
+        <span id="wetlandClusteringValue">0.5</span>
+      </div>
+      <div class="clustering-control">
+        <label>Plains Clustering:</label>
+        <input type="range" id="plainsClustering" min="0" max="10" step="0.1" value="0.5">
+        <span id="plainsClusteringValue">0.5</span>
+      </div>
+      <div class="clustering-control">
+        <label>Forest Clustering:</label>
+        <input type="range" id="forestClustering" min="0" max="10" step="0.1" value="0.5">
+        <span id="forestClusteringValue">0.5</span>
+      </div>
+      <div class="clustering-control">
+        <label>Mountain Clustering:</label>
+        <input type="range" id="mountainClustering" min="0" max="10" step="0.1" value="1.0">
+        <span id="mountainClusteringValue">1.0</span>
+      </div>
+      <div class="clustering-control">
+        <label>Urban Clustering:</label>
+        <input type="range" id="urbanClustering" min="0" max="10" step="0.1" value="0.1">
+        <span id="urbanClusteringValue">0.1</span>
+      </div>
+      <div class="clustering-control">
+        <label>Ruins Clustering:</label>
+        <input type="range" id="ruinsClustering" min="0" max="10" step="0.1" value="0.1">
+        <span id="ruinsClusteringValue">0.1</span>
+      </div>
+    </div>
+  </div>
+        <!-- Terrain Percentages -->
+        <div class="mb-3">
+            <h3>Terrain Percentages</h3>
+            <div class="row gy-3">
+                <div class="col-12 col-md-4">
+                    <label for="waterSlider" class="form-label">Water: <span id="waterPercent">20%</span></label>
+                    <input type="range" id="waterSlider" class="form-range" min="0" max="100" value="20">
+                </div>
+                <div class="col-12 col-md-4">
+                    <label for="wetlandSlider" class="form-label">Wetland: <span id="wetlandPercent">10%</span></label>
+                    <input type="range" id="wetlandSlider" class="form-range" min="0" max="100" value="10">
+                </div>
+                <div class="col-12 col-md-4">
+                    <label for="plainsSlider" class="form-label">Plains: <span id="plainsPercent">30%</span></label>
+                    <input type="range" id="plainsSlider" class="form-range" min="0" max="100" value="30">
+                </div>
+            </div>
+            <div class="row gy-3">
+                <div class="col-12 col-md-4">
+                    <label for="forestSlider" class="form-label">Forest: <span id="forestPercent">25%</span></label>
+                    <input type="range" id="forestSlider" class="form-range" min="0" max="100" value="25">
+                </div>
+                <div class="col-12 col-md-4">
+                    <label for="mountainSlider" class="form-label">Mountain: <span id="mountainPercent">10%</span></label>
+                    <input type="range" id="mountainSlider" class="form-range" min="0" max="100" value="10">
+                </div>
+                <div class="col-12 col-md-4">
+                    <label for="urbanSlider" class="form-label">Urban: <span id="urbanPercent">5%</span></label>
+                    <input type="range" id="urbanSlider" class="form-range" min="0" max="100" value="4">
+                </div>
+                <div class="col-12 col-md-4">
+                    <label for="ruinsSlider" class="form-label">Ruins: <span id="ruinsPercent">5%</span></label>
+                    <input type="range" id="ruinsSlider" class="form-range" min="0" max="100" value="1">
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Presets -->
+        <div class="mb-3">
+            <h3>Presets</h3>
+            <div class="d-flex flex-wrap gap-2">
+                <button class="btn btn-secondary presetButton" data-preset="balanced">Balanced</button>
+                <button class="btn btn-secondary presetButton" data-preset="waterHeavy">Water Heavy</button>
+                <button class="btn btn-secondary presetButton" data-preset="forestHeavy">Forest Heavy</button>
+            </div>
+        </div>
+
+        <!-- River Properties -->
+        <div class="mb-3">
+            <h3>River Properties</h3>
+            <div class="row gy-2">
+                <div class="col-12 col-md-4">
+                    <label for="riverCount" class="form-label">Number of Rivers:</label>
+                    <input type="number" id="riverCount" class="form-control" value="1" min="0" max="10">
+                </div>
+                <div class="col-12 col-md-4">
+                    <label for="riverWidth" class="form-label">River Width:</label>
+                    <input type="number" id="riverWidth" class="form-control" value="8" min="1" max="30">
+                </div>
+                <div class="col-12 col-md-4">
+                    <label for="riverColor" class="form-label">River Color:</label>
+                    <input type="color" id="riverColor" class="form-control" value="#8af7f2">
+                </div>
+            </div>   <div class="col-12 col-md-4">
+                <label for="riverMinLength" class="form-label">Min River Length:</label>
+                <input type="number" id="riverMinLength" class="form-control" value="3" min="1" max="20">
+            </div>
+            <div class="col-12 col-md-4">
+                <label for="riverMaxLength" class="form-label">Max River Length:</label>
+                <input type="number" id="riverMaxLength" class="form-control" value="15" min="1" max="20">
+            </div>
+            <div class="col-12 col-md-4">
+                <label for="riverCurvature" class="form-label">River Curvature:</label>
+                <input type="range" id="riverCurvature" class="form-range" min="0" max="80" value="40">
+            </div>
+            <div class="col-12 col-md-4">
+                <label for="riverCurveSegments" class="form-label">River Curve Segments:</label>
+                <input type="number" id="riverCurveSegments" class="form-control" value="5" min="1" max="10">
+            </div>
+        </div>
+      
+<!-- River Properties -->
+<div class="mb-3">
+    <h3>River Properties</h3>
+    <div class="row gy-2">
+        <div class="col-12 col-md-4">
+            <label for="riverCount" class="form-label">Number of Rivers:</label>
+            <input type="number" id="riverCount" class="form-control" value="1" min="0" max="10">
+        </div>
+        <div class="col-12 col-md-4">
+            <label for="riverWidth" class="form-label">River Width:</label>
+            <input type="number" id="riverWidth" class="form-control" value="8" min="1" max="30">
+        </div>
+        <div class="col-12 col-md-4">
+            <label for="riverColor" class="form-label">River Color:</label>
+            <input type="color" id="riverColor" class="form-control" value="#8af7f2">
+        </div>
+    </div>   <div class="col-12 col-md-4">
+        <label for="riverMinLength" class="form-label">Min River Length:</label>
+        <input type="number" id="riverMinLength" class="form-control" value="3" min="1" max="20">
+    </div>
+    <div class="col-12 col-md-4">
+        <label for="riverMaxLength" class="form-label">Max River Length:</label>
+        <input type="number" id="riverMaxLength" class="form-control" value="15" min="1" max="20">
+    </div>
+    <div class="col-12 col-md-4">
+        <label for="riverCurvature" class="form-label">River Curvature:</label>
+        <input type="range" id="riverCurvature" class="form-range" min="0" max="80" value="40">
+    </div>
+    <div class="col-12 col-md-4">
+        <label for="riverCurveSegments" class="form-label">River Curve Segments:</label>
+        <input type="number" id="riverCurveSegments" class="form-control" value="5" min="1" max="10">
+    </div>
+</div>
+
+<!-- Road Properties -->
+<div class="mb-3">
+    <h3>Road Properties</h3>
+    <div class="row gy-2">
+        <div class="col-12 col-md-4">
+            <label for="roadCount" class="form-label">Number of Roads:</label>
+            <input type="number" id="roadCount" class="form-control" value="1" min="0" max="10">
+        </div>
+        <div class="col-12 col-md-4">
+            <label for="roadWidth" class="form-label">Road Width:</label>
+            <input type="number" id="roadWidth" class="form-control" value="6" min="1" max="30">
+        </div>
+        <div class="col-12 col-md-4">
+            <label for="roadColor" class="form-label">Road Color:</label>
+            <input type="color" id="roadColor" class="form-control" value="#a0a0a0">
+        </div>
+    </div>
+</div>
+
+
+
+        <!-- Generate Map Button -->
+        <div class="d-grid">
+            <button id="generateButton" class="btn btn-success btn-lg">Generate Map</button>
+        </div>
+    </div>
+
+    <!-- Canvas -->
+    <div class="container text-center mt-4">
+        <canvas id="mapCanvas" class="border"></canvas>
+    </div>
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
