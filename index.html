@@ -1,233 +1,442 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Add seed input field -->
-    <div class="mb-3">
-        <h3>Map Seed</h3>
-        <input type="text" id="mapSeed" class="form-control" placeholder="Optional seed">
-    </div>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hex Grid Map Generator</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Custom Styles -->
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hex Grid Map Generator</title>
+  <!-- Bootstrap CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="styles.css" />
+
 </head>
 <body class="bg-light">
-    <div class="container py-4">
-        <h1 class="text-primary mb-4 text-center">Hex Grid Map Generator</h1>
-
-        <!-- Map Dimensions -->
-        <div class="mb-3">
-            <h3>Map Dimensions</h3>
-            <div class="row gy-2">
-                <div class="col-12 col-md-6">
-                    <label for="gridWidth" class="form-label">Grid Width:</label>
-                    <input type="number" id="gridWidth" class="form-control" value="5" min="1" max="20">
+  <div class="container-fluid py-4">
+    <h1 class="text-primary mb-4 text-center">Hex Grid Map Generator</h1>
+    <div class="row">
+      <!-- Settings Column -->
+      <div class="col-md-4">
+        <div class="accordion" id="settingsAccordion">
+          <!-- Map Settings -->
+          <div class="accordion-item mb-3">
+            <h2 class="accordion-header" id="headingMap">
+              <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMap" aria-expanded="true" aria-controls="collapseMap">
+                Map Settings
+              </button>
+            </h2>
+            <div id="collapseMap" class="accordion-collapse collapse show" aria-labelledby="headingMap" data-bs-parent="#settingsAccordion">
+              <div class="accordion-body">
+                <div class="mb-3 border p-3 rounded">
+                  <div class="d-grid">
+                    <button id="generateButton" class="btn btn-success btn-lg">Generate Map</button>
+                  </div>
+                  <div class="mb-2">
+                    <label for="mapSeed" class="form-label small">Seed (optional):</label>
+                    <input type="text" id="mapSeed" class="form-control form-control-sm" placeholder="Optional seed">
+                  </div>
+                  <div class="row gy-2">
+                    <div class="col-sm-6">
+                      <label for="gridWidth" class="form-label small">Width:</label>
+                      <input type="number" id="gridWidth" class="form-control form-control-sm" value="15" min="1" max="50">
+                    </div>
+                    <div class="col-sm-6">
+                      <label for="gridHeight" class="form-label small">Height:</label>
+                      <input type="number" id="gridHeight" class="form-control form-control-sm" value="8" min="1" max="50">
+                    </div>
+                    <div class="col-12">
+                      <label for="scaleFactor" class="form-label small">Hex Scale:</label>
+                      <input type="number" id="scaleFactor" class="form-control form-control-sm" value="1.85" min="0.5" max="3" step="0.1">
+                    </div>
+                  </div>
                 </div>
-                <div class="col-12 col-md-6">
-                    <label for="gridHeight" class="form-label">Grid Height:</label>
-                    <input type="number" id="gridHeight" class="form-control" value="5" min="1" max="20">
-                </div>
+              </div>
             </div>
+          </div>
+          <!-- Terrain Labels Settings -->
+          <div class="accordion-item mb-3">
+            <h2 class="accordion-header" id="headingLabels">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseLabels" aria-expanded="false" aria-controls="collapseLabels">
+                Terrain Labels
+              </button>
+            </h2>
+            <div id="collapseLabels" class="accordion-collapse collapse" aria-labelledby="headingLabels" data-bs-parent="#settingsAccordion">
+              <div class="accordion-body">
+                <div class="mb-3 border p-3 rounded">
+                  <!-- Label Settings Template (Hidden) -->
+                  <template id="labelSettingsTemplate">
+                    <div class="terrain-label-settings mb-3 p-2 border rounded" data-terrain="">
+                      <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="small mb-0"></h5>
+                        <button class="btn btn-sm btn-outline-secondary toggle-settings">▼</button>
+                      </div>
+                      <div class="settings-content">
+                        <div class="row g-2">
+                          <div class="col-6">
+                            <label class="small">Label Chance (%)</label>
+                            <input type="number" class="form-control form-control-sm" min="0" max="100" value="100">
+                          </div>
+                          <div class="col-6">
+                            <label class="small">Font Size</label>
+                            <input type="number" class="form-control form-control-sm" min="8" max="48" value="16">
+                          </div>
+                          <div class="col-6">
+                            <label class="small">Text Color</label>
+                            <input type="color" class="form-control form-control-sm">
+                          </div>
+                          <div class="col-6">
+                            <label class="small">Names (comma-separated)</label>
+                            <textarea class="form-control form-control-sm" rows="2"></textarea>
+                          </div>
+                          <div class="col-12">
+                            <label class="small">Keywords (comma-separated)</label>
+                            <textarea class="form-control form-control-sm keywords-input" rows="3"></textarea>
+                          </div>
+                          <div class="col-12">
+                            <label class="small">Keyword Weights (comma-separated numbers)</label>
+                            <input type="text" class="form-control form-control-sm weights-input" placeholder="35,30,25...">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </template>
+                  <!-- Preset Label Configurations -->
+                  <div id="labelSettingsContainer">
+                    <!-- Settings will be added dynamically -->
+                  </div>
+                  <button id="resetLabelSettings" class="btn btn-secondary btn-sm mt-2">Reset to Defaults</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Terrain Settings -->
+          <div class="accordion-item mb-3">
+            <h2 class="accordion-header" id="headingTerrain">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTerrain" aria-expanded="false" aria-controls="collapseTerrain">
+                Terrain Settings
+              </button>
+            </h2>
+            <div id="collapseTerrain" class="accordion-collapse collapse" aria-labelledby="headingTerrain" data-bs-parent="#settingsAccordion">
+              <div class="accordion-body">
+                <div class="mb-3 border p-3 rounded">
+                  <h5 class="small">Percentages</h5>
+                  <!-- Original Terrain Sliders -->
+                  <div class="row gy-2">
+                    <div class="col-sm-6 col-md-6 col-lg-4">
+                      <label for="waterSlider" class="form-label small">Water: <span id="waterPercent">5%</span></label>
+                      <input type="range" id="waterSlider" class="form-range form-range-sm" min="0" max="100" value="5">
+                    </div>
+                    <div class="col-sm-6 col-md-6 col-lg-4">
+                      <label for="wetlandSlider" class="form-label small">Wetland: <span id="wetlandPercent">10%</span></label>
+                      <input type="range" id="wetlandSlider" class="form-range form-range-sm" min="0" max="100" value="10">
+                    </div>
+                    <div class="col-sm-6 col-md-6 col-lg-4">
+                      <label for="plainsSlider" class="form-label small">Plains: <span id="plainsPercent">30%</span></label>
+                      <input type="range" id="plainsSlider" class="form-range form-range-sm" min="0" max="100" value="30">
+                    </div>
+                  </div>
+                  <div class="row gy-2">
+                    <div class="col-sm-6 col-md-6 col-lg-4">
+                      <label for="forestSlider" class="form-label small">Forest: <span id="forestPercent">25%</span></label>
+                      <input type="range" id="forestSlider" class="form-range form-range-sm" min="0" max="100" value="25">
+                    </div>
+                    <div class="col-sm-6 col-md-6 col-lg-4">
+                      <label for="mountainSlider" class="form-label small">Mountain: <span id="mountainPercent">10%</span></label>
+                      <input type="range" id="mountainSlider" class="form-range form-range-sm" min="0" max="100" value="10">
+                    </div>
+                    <div class="col-sm-6 col-md-6 col-lg-4">
+                      <label for="urbanSlider" class="form-label small">Urban: <span id="urbanPercent">5%</span></label>
+                      <input type="range" id="urbanSlider" class="form-range form-range-sm" min="0" max="100" value="5">
+                    </div>
+                  </div>
+                  <div class="row gy-2">
+                    <div class="col-sm-6 col-md-6 col-lg-4">
+                      <label for="ruinsSlider" class="form-label small">Ruins: <span id="ruinsPercent">1%</span></label>
+                      <input type="range" id="ruinsSlider" class="form-range form-range-sm" min="0" max="100" value="1">
+                    </div>
+                  </div>
+                  <h5 class="small mt-3">New Terrains</h5>
+                  <!-- Row 1: Snow, Snowmountain, Dune -->
+                  <div class="row gy-2">
+                    <div class="col-sm-6 col-md-6 col-lg-4">
+                      <label for="snowSlider" class="form-label small">Snow: <span id="snowPercent">6%</span></label>
+                      <input type="range" id="snowSlider" class="form-range form-range-sm" min="0" max="100" value="0">
+                    </div>
+                    <div class="col-sm-6 col-md-6 col-lg-4">
+                      <label for="snowmountainSlider" class="form-label small">Snowmountain: <span id="snowmountainPercent">5%</span></label>
+                      <input type="range" id="snowmountainSlider" class="form-range form-range-sm" min="0" max="100" value="0">
+                    </div>
+                    <div class="col-sm-6 col-md-6 col-lg-4">
+                      <label for="duneSlider" class="form-label small">Dune: <span id="dunePercent">6%</span></label>
+                      <input type="range" id="duneSlider" class="form-range form-range-sm" min="0" max="100" value="5">
+                    </div>
+                  </div>
+                  <!-- Row 2: Hills, Snowhills, Volcano -->
+                  <div class="row gy-2">
+                    <div class="col-sm-6 col-md-6 col-lg-4">
+                      <label for="hillsSlider" class="form-label small">Hills: <span id="hillsPercent">5%</span></label>
+                      <input type="range" id="hillsSlider" class="form-range form-range-sm" min="0" max="100" value="10">
+                    </div>
+                    <div class="col-sm-6 col-md-6 col-lg-4">
+                      <label for="snowhillsSlider" class="form-label small">Snowhills: <span id="snowhillsPercent">5%</span></label>
+                      <input type="range" id="snowhillsSlider" class="form-range form-range-sm" min="0" max="100" value="0">
+                    </div>
+                    <div class="col-sm-6 col-md-6 col-lg-4">
+                      <label for="volcanoSlider" class="form-label small">Volcano: <span id="volcanoPercent">4%</span></label>
+                      <input type="range" id="volcanoSlider" class="form-range form-range-sm" min="0" max="100" value="1">
+                    </div>
+                  </div>
+                  <!-- Row 3: Bad Volcano, Snow Volcano, Bad Mountain -->
+                  <div class="row gy-2">
+                    <div class="col-sm-6 col-md-6 col-lg-4">
+                      <label for="badvolcanoSlider" class="form-label small">Bad Volcano: <span id="badvolcanoPercent">3%</span></label>
+                      <input type="range" id="badvolcanoSlider" class="form-range form-range-sm" min="0" max="100" value="1">
+                    </div>
+                    <div class="col-sm-6 col-md-6 col-lg-4">
+                      <label for="snowvolcanoSlider" class="form-label small">Snow Volcano: <span id="snowvolcanoPercent">3%</span></label>
+                      <input type="range" id="snowvolcanoSlider" class="form-range form-range-sm" min="0" max="100" value="0">
+                    </div>
+                    <div class="col-sm-6 col-md-6 col-lg-4">
+                      <label for="badmountainSlider" class="form-label small">Bad Mountain: <span id="badmountainPercent">3%</span></label>
+                      <input type="range" id="badmountainSlider" class="form-range form-range-sm" min="0" max="100" value="3">
+                    </div>
+                  </div>
+                  <!-- Clustering Controls -->
+                  <div class="mb-2 mt-3">
+                    <h5 class="small">Clustering - Original Terrains</h5>
+                    <div class="clustering-controls">
+                      <div class="clustering-control">
+                        <label for="waterClustering" class="small">Water:</label>
+                        <input type="range" id="waterClustering" class="form-range form-range-sm" min="0" max="10" step="0.1" value="10.0">
+                        <span id="waterClusteringValue" class="small">10.0</span>
+                      </div>
+                      <div class="clustering-control">
+                        <label for="wetlandClustering" class="small">Wetland:</label>
+                        <input type="range" id="wetlandClustering" class="form-range form-range-sm" min="0" max="10" step="0.1" value="0.3">
+                        <span id="wetlandClusteringValue" class="small">0.3</span>
+                      </div>
+                      <div class="clustering-control">
+                        <label for="plainsClustering" class="small">Plains:</label>
+                        <input type="range" id="plainsClustering" class="form-range form-range-sm" min="0" max="10" step="0.1" value="0.3">
+                        <span id="plainsClusteringValue" class="small">0.3</span>
+                      </div>
+                      <div class="clustering-control">
+                        <label for="forestClustering" class="small">Forest:</label>
+                        <input type="range" id="forestClustering" class="form-range form-range-sm" min="0" max="10" step="0.1" value="0.3">
+                        <span id="forestClusteringValue" class="small">0.3</span>
+                      </div>
+                      <div class="clustering-control">
+                        <label for="mountainClustering" class="small">Mountain:</label>
+                        <input type="range" id="mountainClustering" class="form-range form-range-sm" min="0" max="10" step="0.1" value="1.5">
+                        <span id="mountainClusteringValue" class="small">1.5</span>
+                      </div>
+                      <div class="clustering-control">
+                        <label for="urbanClustering" class="small">Urban:</label>
+                        <input type="range" id="urbanClustering" class="form-range form-range-sm" min="0" max="10" step="0.1" value="0.1">
+                        <span id="urbanClusteringValue" class="small">0.1</span>
+                      </div>
+                      <div class="clustering-control">
+                        <label for="ruinsClustering" class="small">Ruins:</label>
+                        <input type="range" id="ruinsClustering" class="form-range form-range-sm" min="0" max="10" step="0.1" value="0.1">
+                        <span id="ruinsClusteringValue" class="small">0.1</span>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- New Terrain Clustering -->
+                  <div class="mb-2 mt-3">
+                    <h5 class="small">Clustering - New Terrains</h5>
+                    <div class="clustering-controls">
+                      <div class="clustering-control">
+                        <label for="snowClustering" class="small">Snow:</label>
+                        <input type="range" id="snowClustering" class="form-range form-range-sm" min="0" max="10" step="0.1" value="0.3">
+                        <span id="snowClusteringValue" class="small">0.3</span>
+                      </div>
+                      <div class="clustering-control">
+                        <label for="snowmountainClustering" class="small">Snowmountain:</label>
+                        <input type="range" id="snowmountainClustering" class="form-range form-range-sm" min="0" max="10" step="0.1" value="0.3">
+                        <span id="snowmountainClusteringValue" class="small">0.3</span>
+                      </div>
+                      <div class="clustering-control">
+                        <label for="duneClustering" class="small">Dune:</label>
+                        <input type="range" id="duneClustering" class="form-range form-range-sm" min="0" max="10" step="0.1" value="0.3">
+                        <span id="duneClusteringValue" class="small">0.3</span>
+                      </div>
+                      <div class="clustering-control">
+                        <label for="hillsClustering" class="small">Hills:</label>
+                        <input type="range" id="hillsClustering" class="form-range form-range-sm" min="0" max="10" step="0.1" value="0.3">
+                        <span id="hillsClusteringValue" class="small">0.3</span>
+                      </div>
+                      <div class="clustering-control">
+                        <label for="snowhillsClustering" class="small">Snowhills:</label>
+                        <input type="range" id="snowhillsClustering" class="form-range form-range-sm" min="0" max="10" step="0.1" value="0.3">
+                        <span id="snowhillsClusteringValue" class="small">0.3</span>
+                      </div>
+                      <div class="clustering-control">
+                        <label for="volcanoClustering" class="small">Volcano:</label>
+                        <input type="range" id="volcanoClustering" class="form-range form-range-sm" min="0" max="10" step="0.1" value="0.3">
+                        <span id="volcanoClusteringValue" class="small">0.3</span>
+                      </div>
+                      <div class="clustering-control">
+                        <label for="badvolcanoClustering" class="small">Bad Volcano:</label>
+                        <input type="range" id="badvolcanoClustering" class="form-range form-range-sm" min="0" max="10" step="0.1" value="0.3">
+                        <span id="badvolcanoClusteringValue" class="small">0.3</span>
+                      </div>
+                      <div class="clustering-control">
+                        <label for="snowvolcanoClustering" class="small">Snow Volcano:</label>
+                        <input type="range" id="snowvolcanoClustering" class="form-range form-range-sm" min="0" max="10" step="0.1" value="0.3">
+                        <span id="snowvolcanoClusteringValue" class="small">0.3</span>
+                      </div>
+                      <div class="clustering-control">
+                        <label for="badmountainClustering" class="small">Bad Mountain:</label>
+                        <input type="range" id="badmountainClustering" class="form-range form-range-sm" min="0" max="10" step="0.1" value="0.3">
+                        <span id="badmountainClusteringValue" class="small">0.3</span>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- End Clustering -->
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Features Settings -->
+          <div class="accordion-item mb-3">
+            <h2 class="accordion-header" id="headingFeatures">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFeatures" aria-expanded="false" aria-controls="collapseFeatures">
+                Features
+              </button>
+            </h2>
+            <div id="collapseFeatures" class="accordion-collapse collapse" aria-labelledby="headingFeatures" data-bs-parent="#settingsAccordion">
+              <div class="accordion-body">
+                <div class="mb-3 border p-3 rounded">
+                  <h5 class="small">Rivers</h5>
+                  <div class="row gy-2">
+                    <div class="col-sm-6">
+                      <label for="riverCount" class="form-label small">Count:</label>
+                      <input type="number" id="riverCount" class="form-control form-control-sm" value="3" min="0" max="30">
+                    </div>
+                    <div class="col-sm-6">
+                      <label for="riverWidth" class="form-label small">Width:</label>
+                      <input type="number" id="riverWidth" class="form-control form-control-sm" value="5" min="15" max="100">
+                    </div>
+                    <div class="col-12">
+                      <label for="riverColor" class="form-label small">Color:</label>
+                      <input type="color" id="riverColor" class="form-control form-control-sm" value="#8af7f2">
+                    </div>
+                    <div class="col-sm-6">
+                      <label for="riverCurvature" class="form-label small">Curvature:</label>
+                      <input type="number" id="riverCurvature" class="form-control form-control-sm" value="50" min="0" max="1000">
+                    </div>
+                    <div class="col-sm-6">
+                      <label for="riverCurveSegments" class="form-label small">Segments:</label>
+                      <input type="number" id="riverCurveSegments" class="form-control form-control-sm" value="15" min="1" max="200">
+                    </div>
+                    <div class="col-sm-6">
+                      <label for="riverMinLength" class="form-label small">Min Length:</label>
+                      <input type="number" id="riverMinLength" class="form-control form-control-sm" value="8" min="1" max="100">
+                    </div>
+                    <div class="col-sm-6">
+                      <label for="riverMaxLength" class="form-label small">Max Length:</label>
+                      <input type="number" id="riverMaxLength" class="form-control form-control-sm" value="60" min="1" max="200">
+                    </div>
+                  </div>
+                  <h5 class="small mt-3">Roads</h5>
+                  <div class="row gy-2">
+                    <div class="col-sm-6">
+                      <label for="roadCount" class="form-label small">Count:</label>
+                      <input type="number" id="roadCount" class="form-control form-control-sm" value="1" min="0" max="10">
+                    </div>
+                    <div class="col-sm-6">
+                      <label for="roadWidth" class="form-label small">Width:</label>
+                      <input type="number" id="roadWidth" class="form-control form-control-sm" value="10" min="1" max="70">
+                    </div>
+                    <div class="col-12">
+                      <label for="roadColor" class="form-label small">Color:</label>
+                      <input type="color" id="roadColor" class="form-control form-control-sm" value="#ffffff">
+                    </div>
+                    <div class="col-sm-6">
+                      <label for="roadCurvature" class="form-label small">Curvature:</label>
+                      <input type="number" id="roadCurvature" class="form-control form-control-sm" value="150" min="0" max="1000">
+                    </div>
+                    <div class="col-sm-6">
+                      <label for="roadCurveSegments" class="form-label small">Segments:</label>
+                      <input type="number" id="roadCurveSegments" class="form-control form-control-sm" value="4" min="1" max="20">
+                    </div>
+                    <div class="col-sm-6">
+                      <label for="roadDashLength" class="form-label small">Dash Length:</label>
+                      <input type="number" id="roadDashLength" class="form-control form-control-sm" value="9" min="1" max="50">
+                    </div>
+                    <div class="col-sm-6">
+                      <label for="roadDashGap" class="form-label small">Dash Gap:</label>
+                      <input type="number" id="roadDashGap" class="form-control form-control-sm" value="50" min="1" max="100">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Regeneration Controls -->
+          <div class="accordion-item mb-3">
+            <h2 class="accordion-header" id="headingRegenerate">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseRegenerate" aria-expanded="false" aria-controls="collapseRegenerate">
+                Regenerate Layers
+              </button>
+            </h2>
+            <div id="collapseRegenerate" class="accordion-collapse collapse" aria-labelledby="headingRegenerate" data-bs-parent="#settingsAccordion">
+              <div class="accordion-body">
+                <div class="d-grid gap-2">
+                  <button id="regenLabels" class="btn btn-primary btn-sm">Regenerate Labels</button>
+                  <button id="regenRoads" class="btn btn-primary btn-sm">Regenerate Roads</button>
+                  <button id="regenRivers" class="btn btn-primary btn-sm">Regenerate Rivers</button>
+                  <button id="toggleLabels" class="btn btn-secondary btn-sm">Toggle Labels</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Presets -->
+          <div class="accordion-item mb-3">
+            <h2 class="accordion-header" id="headingPresets">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePresets" aria-expanded="false" aria-controls="collapsePresets">
+                Presets
+              </button>
+            </h2>
+            <div id="collapsePresets" class="accordion-collapse collapse" aria-labelledby="headingPresets" data-bs-parent="#settingsAccordion">
+              <div class="accordion-body">
+                <div class="d-flex flex-wrap gap-2">
+                  <button class="btn btn-secondary presetButton" data-preset="balanced">Balanced</button>
+                  <button class="btn btn-secondary presetButton" data-preset="waterHeavy">Water Heavy</button>
+                  <button class="btn btn-secondary presetButton" data-preset="forestHeavy">Forest Heavy</button>
+                  <button class="btn btn-secondary presetButton" data-preset="normalClustering">Normal Clustering</button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="col-12 col-md-4">
-            <label for="scaleFactor" class="form-label">Hex Scale:</label>
-            <input type="number" id="scaleFactor" class="form-control"
-                   value="1.85" min="0.5" max="3" step="0.1">
+      </div>
+      <!-- Map Canvas Column -->
+      <div class="col-md-8">
+        <div class="map-container border rounded overflow-hidden">
+          <canvas id="mapCanvas"></canvas>
+          <!-- If using a separate labels canvas, include it here -->
+          <canvas id="labelsCanvas"></canvas>
         </div>
-<!-- Add this section after the existing terrain controls -->
-<div class="controls-section">
-    <h3>Clustering Factors</h3>
-    <div class="clustering-controls">
-      <!-- Repeat this pattern for each terrain type -->
-      <div class="clustering-control">
-        <label>Water Clustering:</label>
-        <input type="range" id="waterClustering" min="0" max="10" step="0.1" value="1.0">
-        <span id="waterClusteringValue">1.0</span>
-      </div>
-      <div class="clustering-control">
-        <label>Wetland Clustering:</label>
-        <input type="range" id="wetlandClustering" min="0" max="10" step="0.1" value="0.5">
-        <span id="wetlandClusteringValue">0.5</span>
-      </div>
-      <div class="clustering-control">
-        <label>Plains Clustering:</label>
-        <input type="range" id="plainsClustering" min="0" max="10" step="0.1" value="0.5">
-        <span id="plainsClusteringValue">0.5</span>
-      </div>
-      <div class="clustering-control">
-        <label>Forest Clustering:</label>
-        <input type="range" id="forestClustering" min="0" max="10" step="0.1" value="0.5">
-        <span id="forestClusteringValue">0.5</span>
-      </div>
-      <div class="clustering-control">
-        <label>Mountain Clustering:</label>
-        <input type="range" id="mountainClustering" min="0" max="10" step="0.1" value="1.0">
-        <span id="mountainClusteringValue">1.0</span>
-      </div>
-      <div class="clustering-control">
-        <label>Urban Clustering:</label>
-        <input type="range" id="urbanClustering" min="0" max="10" step="0.1" value="0.1">
-        <span id="urbanClusteringValue">0.1</span>
-      </div>
-      <div class="clustering-control">
-        <label>Ruins Clustering:</label>
-        <input type="range" id="ruinsClustering" min="0" max="10" step="0.1" value="0.1">
-        <span id="ruinsClusteringValue">0.1</span>
       </div>
     </div>
   </div>
-        <!-- Terrain Percentages -->
-        <div class="mb-3">
-            <h3>Terrain Percentages</h3>
-            <div class="row gy-3">
-                <div class="col-12 col-md-4">
-                    <label for="waterSlider" class="form-label">Water: <span id="waterPercent">20%</span></label>
-                    <input type="range" id="waterSlider" class="form-range" min="0" max="100" value="20">
-                </div>
-                <div class="col-12 col-md-4">
-                    <label for="wetlandSlider" class="form-label">Wetland: <span id="wetlandPercent">10%</span></label>
-                    <input type="range" id="wetlandSlider" class="form-range" min="0" max="100" value="10">
-                </div>
-                <div class="col-12 col-md-4">
-                    <label for="plainsSlider" class="form-label">Plains: <span id="plainsPercent">30%</span></label>
-                    <input type="range" id="plainsSlider" class="form-range" min="0" max="100" value="30">
-                </div>
-            </div>
-            <div class="row gy-3">
-                <div class="col-12 col-md-4">
-                    <label for="forestSlider" class="form-label">Forest: <span id="forestPercent">25%</span></label>
-                    <input type="range" id="forestSlider" class="form-range" min="0" max="100" value="25">
-                </div>
-                <div class="col-12 col-md-4">
-                    <label for="mountainSlider" class="form-label">Mountain: <span id="mountainPercent">10%</span></label>
-                    <input type="range" id="mountainSlider" class="form-range" min="0" max="100" value="10">
-                </div>
-                <div class="col-12 col-md-4">
-                    <label for="urbanSlider" class="form-label">Urban: <span id="urbanPercent">5%</span></label>
-                    <input type="range" id="urbanSlider" class="form-range" min="0" max="100" value="4">
-                </div>
-                <div class="col-12 col-md-4">
-                    <label for="ruinsSlider" class="form-label">Ruins: <span id="ruinsPercent">5%</span></label>
-                    <input type="range" id="ruinsSlider" class="form-range" min="0" max="100" value="1">
-                </div>
-            </div>
 
-        </div>
-
-        <!-- Presets -->
-        <div class="mb-3">
-            <h3>Presets</h3>
-            <div class="d-flex flex-wrap gap-2">
-                <button class="btn btn-secondary presetButton" data-preset="balanced">Balanced</button>
-                <button class="btn btn-secondary presetButton" data-preset="waterHeavy">Water Heavy</button>
-                <button class="btn btn-secondary presetButton" data-preset="forestHeavy">Forest Heavy</button>
-            </div>
-        </div>
-
-        <!-- River Properties -->
-        <div class="mb-3">
-            <h3>River Properties</h3>
-            <div class="row gy-2">
-                <div class="col-12 col-md-4">
-                    <label for="riverCount" class="form-label">Number of Rivers:</label>
-                    <input type="number" id="riverCount" class="form-control" value="1" min="0" max="10">
-                </div>
-                <div class="col-12 col-md-4">
-                    <label for="riverWidth" class="form-label">River Width:</label>
-                    <input type="number" id="riverWidth" class="form-control" value="8" min="1" max="30">
-                </div>
-                <div class="col-12 col-md-4">
-                    <label for="riverColor" class="form-label">River Color:</label>
-                    <input type="color" id="riverColor" class="form-control" value="#8af7f2">
-                </div>
-            </div>   <div class="col-12 col-md-4">
-                <label for="riverMinLength" class="form-label">Min River Length:</label>
-                <input type="number" id="riverMinLength" class="form-control" value="3" min="1" max="20">
-            </div>
-            <div class="col-12 col-md-4">
-                <label for="riverMaxLength" class="form-label">Max River Length:</label>
-                <input type="number" id="riverMaxLength" class="form-control" value="15" min="1" max="20">
-            </div>
-            <div class="col-12 col-md-4">
-                <label for="riverCurvature" class="form-label">River Curvature:</label>
-                <input type="range" id="riverCurvature" class="form-range" min="0" max="80" value="40">
-            </div>
-            <div class="col-12 col-md-4">
-                <label for="riverCurveSegments" class="form-label">River Curve Segments:</label>
-                <input type="number" id="riverCurveSegments" class="form-control" value="5" min="1" max="10">
-            </div>
-        </div>
-      
-<!-- River Properties -->
-<div class="mb-3">
-    <h3>River Properties</h3>
-    <div class="row gy-2">
-        <div class="col-12 col-md-4">
-            <label for="riverCount" class="form-label">Number of Rivers:</label>
-            <input type="number" id="riverCount" class="form-control" value="1" min="0" max="10">
-        </div>
-        <div class="col-12 col-md-4">
-            <label for="riverWidth" class="form-label">River Width:</label>
-            <input type="number" id="riverWidth" class="form-control" value="8" min="1" max="30">
-        </div>
-        <div class="col-12 col-md-4">
-            <label for="riverColor" class="form-label">River Color:</label>
-            <input type="color" id="riverColor" class="form-control" value="#8af7f2">
-        </div>
-    </div>   <div class="col-12 col-md-4">
-        <label for="riverMinLength" class="form-label">Min River Length:</label>
-        <input type="number" id="riverMinLength" class="form-control" value="3" min="1" max="20">
-    </div>
-    <div class="col-12 col-md-4">
-        <label for="riverMaxLength" class="form-label">Max River Length:</label>
-        <input type="number" id="riverMaxLength" class="form-control" value="15" min="1" max="20">
-    </div>
-    <div class="col-12 col-md-4">
-        <label for="riverCurvature" class="form-label">River Curvature:</label>
-        <input type="range" id="riverCurvature" class="form-range" min="0" max="80" value="40">
-    </div>
-    <div class="col-12 col-md-4">
-        <label for="riverCurveSegments" class="form-label">River Curve Segments:</label>
-        <input type="number" id="riverCurveSegments" class="form-control" value="5" min="1" max="10">
-    </div>
-</div>
-
-<!-- Road Properties -->
-<div class="mb-3">
-    <h3>Road Properties</h3>
-    <div class="row gy-2">
-        <div class="col-12 col-md-4">
-            <label for="roadCount" class="form-label">Number of Roads:</label>
-            <input type="number" id="roadCount" class="form-control" value="1" min="0" max="10">
-        </div>
-        <div class="col-12 col-md-4">
-            <label for="roadWidth" class="form-label">Road Width:</label>
-            <input type="number" id="roadWidth" class="form-control" value="6" min="1" max="30">
-        </div>
-        <div class="col-12 col-md-4">
-            <label for="roadColor" class="form-label">Road Color:</label>
-            <input type="color" id="roadColor" class="form-control" value="#a0a0a0">
-        </div>
-    </div>
-</div>
-
-
-
-        <!-- Generate Map Button -->
-        <div class="d-grid">
-            <button id="generateButton" class="btn btn-success btn-lg">Generate Map</button>
-        </div>
-    </div>
-
-    <!-- Canvas -->
-    <div class="container text-center mt-4">
-        <canvas id="mapCanvas" class="border"></canvas>
-    </div>
-    <!-- JavaScript -->
-    <script src="script.js"></script>
+  <!-- JavaScript Files - using module type -->
+  <script type="module" src="config.js"></script>
+  <script type="module" src="utils.js"></script>
+  <script type="module" src="images.js"></script>
+  <script type="module" src="canvas.js"></script>
+  <script type="module" src="terrain.js"></script>
+  <script type="module" src="labels.js"></script>
+  <script type="module" src="rivers.js"></script>
+  <script type="module" src="roads.js"></script>
+  <script type="module" src="controls.js"></script>
+  <script type="module" src="main.js"></script>
+  <!-- Bootstrap Bundle with Popper (needed for accordion functionality) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
